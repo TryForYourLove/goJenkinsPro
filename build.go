@@ -237,6 +237,17 @@ func (b *Build) Stop(ctx context.Context) (bool, error) {
 	return true, nil
 }
 
+func (b *Build) Delete(ctx context.Context) (bool, error) {
+	if b.IsRunning(ctx) {
+		return false, errors.New("build is running ,delete failed")
+	}
+	response, err := b.Jenkins.Requester.Post(ctx, b.Base+"/doDelete", nil, nil, nil)
+	if err != nil {
+		return false, err
+	}
+	return response.StatusCode == 200, nil
+}
+
 func (b *Build) GetConsoleOutput(ctx context.Context) string {
 	url := b.Base + "/consoleText"
 	var content string
